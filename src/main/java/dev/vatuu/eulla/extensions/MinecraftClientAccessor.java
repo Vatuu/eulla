@@ -8,6 +8,7 @@ public interface MinecraftClientAccessor {
     void setFramebuffer(Framebuffer buffer);
 
     static MinecraftClientAccessor get(MinecraftClient client) {
-        return (MinecraftClientAccessor)client;
+        return (MinecraftClientAccessor) client;
     }
+
 }

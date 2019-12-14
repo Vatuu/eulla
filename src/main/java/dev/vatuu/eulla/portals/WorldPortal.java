@@ -1,23 +1,14 @@
 package dev.vatuu.eulla.portals;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import dev.vatuu.eulla.WorldPortals;
-import dev.vatuu.eulla.render.GlUtils;
-import dev.vatuu.eulla.render.Shaders;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.render.*;
 import net.minecraft.client.util.Window;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import java.util.UUID;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL31;
 
 public class WorldPortal {
 
@@ -28,7 +19,7 @@ public class WorldPortal {
     private String id;
     private Vec3d position;
     private int width, height;
-    private float pitch, yaw;;
+    private float pitch, yaw;
     private int fbWidth, fbHeight;
     private boolean needsRender;
 
@@ -36,7 +27,7 @@ public class WorldPortal {
         this(target, position, width, height, pitch, yaw, UUID.randomUUID().toString(), false);
     }
 
-    public WorldPortal(PortalTargetCamera target, Vec3d position, int width, int height, float pitch, float yaw, String id, boolean staticCamera){
+    public WorldPortal(PortalTargetCamera target, Vec3d position, int width, int height, float pitch, float yaw, String id, boolean staticCamera) {
         this.targetCamera = target;
         this.position = position;
         this.width = width;
@@ -106,10 +97,15 @@ public class WorldPortal {
     public String getId() {
         return id;
     }
+
     public Vec3d getPosition() { return position; }
+
     public int getWidth() { return width; }
+
     public int getHeight() { return height; }
+
     public float getPitch() { return pitch; }
+
     public float getYaw() { return yaw; }
 
 }

@@ -7,23 +7,25 @@ public class WorldPortalManager {
 
     private Set<WorldPortal> portals;
 
-    public WorldPortalManager(){
+    public WorldPortalManager() {
         this.portals = new HashSet<>();
     }
 
-    public Set<WorldPortal> getPortals() { return portals; }
+    public Set<WorldPortal> getPortals() {
+        return portals;
+    }
 
-    public void addPortal(WorldPortal portal){
+    public void addPortal(WorldPortal portal) {
         boolean exists = false;
-        for(WorldPortal p : portals){
-            if(p.getId() == portal.getId()){
+        for (WorldPortal p : portals) {
+            if (p.getId().equals(portal.getId())) {
                 exists = true;
                 break;
             }
         }
-        if(exists){
+        if (exists) {
             System.out.println("Portal already exists. Skipping.");
-        }else{
+        } else {
             portals.add(portal);
         }
     }

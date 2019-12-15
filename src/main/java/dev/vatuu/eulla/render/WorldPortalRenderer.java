@@ -1,5 +1,8 @@
 package dev.vatuu.eulla.render;
 
+import dev.vatuu.eulla.WorldPortals;
+import dev.vatuu.eulla.extensions.WorldRendererExt;
+import dev.vatuu.eulla.portals.WorldPortal;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.WorldRenderer;
@@ -8,35 +11,22 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
+import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 
-import dev.vatuu.eulla.WorldPortals;
-import dev.vatuu.eulla.extensions.WorldRendererExt;
-import dev.vatuu.eulla.portals.WorldPortal;
-import org.lwjgl.BufferUtils;
-
 import static com.mojang.blaze3d.platform.GlStateManager.getAttribLocation;
 import static com.mojang.blaze3d.platform.GlStateManager.getUniformLocation;
-import static com.mojang.blaze3d.systems.RenderSystem.disableCull;
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.glDrawArrays;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
+import static com.mojang.blaze3d.systems.RenderSystem.*;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.glUniform1i;
-import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
-import static org.lwjgl.opengl.GL20.glUseProgram;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.*;
 
 public class WorldPortalRenderer {
 
@@ -66,13 +56,13 @@ public class WorldPortalRenderer {
         glBindVertexArray(vao);
 
         buffer.clear();
-        buffer.put(-1).put(-1).put(0);
-        buffer.put(1).put(-1).put(0);
-        buffer.put(1).put(1).put(0);
+        buffer.put(-0.5f).put(-0.5f).put(0);
+        buffer.put(0.5f).put(-0.5f).put(0);
+        buffer.put(0.5f).put(0.5f).put(0);
 
-        buffer.put(-1).put(-1).put(0);
-        buffer.put(1).put(1).put(0);
-        buffer.put(-1).put(1).put(0);
+        buffer.put(-0.5f).put(-0.5f).put(0);
+        buffer.put(0.5f).put(0.5f).put(0);
+        buffer.put(-0.5f).put(0.5f).put(0);
         buffer.flip();
 
         glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
@@ -91,13 +81,16 @@ public class WorldPortalRenderer {
     private void render(WorldPortal portal, Matrix4f projection, MatrixStack model) {
         if (vbo == 0) init();
 
+        portal.renderPortalView();
         Framebuffer portalView = portal.getView();
 
         glUseProgram(Shaders.PORTAL_SHADER);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBindVertexArray(vao);
 
-        disableCull();
+        enableCull();
+        enableDepthTest();
+        depthMask(true);
 
         model.push();
 
@@ -110,7 +103,7 @@ public class WorldPortalRenderer {
         Matrix4f mvp = projection.copy();
         mvp.multiply(model.peek().getModel());
         mvp.writeToBuffer(buffer);
-        buffer.position(16); // writeToBuffer actually doesn't increase the position, so we'll need to do it here
+        buffer.position(16);
         buffer.flip();
         glUniformMatrix4fv(mvpUniformLocation, false, buffer);
 

@@ -1,5 +1,9 @@
 package dev.vatuu.eulla.gui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import dev.vatuu.eulla.WorldPortals;
+import dev.vatuu.eulla.portals.PortalTargetCamera;
+import dev.vatuu.eulla.portals.WorldPortal;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.screen.Screen;
@@ -8,10 +12,6 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Vec3d;
-import com.mojang.blaze3d.systems.RenderSystem;
-
-import dev.vatuu.eulla.portals.PortalTargetCamera;
-import dev.vatuu.eulla.portals.WorldPortal;
 import org.lwjgl.opengl.GL11;
 
 public class TestScreen extends Screen {
@@ -26,24 +26,26 @@ public class TestScreen extends Screen {
     }
 
     public void init() {
+        this.wp = WorldPortals.INSTANCE.getPortalManager().getPortal("testportal");
         if (wp == null) {
             wp = new WorldPortal(
-                new PortalTargetCamera(new Vec3d(0, 64, 0), 0, 0),
-                new Vec3d(0, 32, 0),
-                1, 2,
-                0, 0,
-                false);
+                    new PortalTargetCamera(new Vec3d(0, 64, 0), 0, 0),
+                    new Vec3d(123.5d, 68.5d, -156.5d),
+                    3, 3, 90, 0, "testportal", false
+            );
+            WorldPortals.INSTANCE.getPortalManager().addPortal(wp);
         }
     }
 
     @Override
     public void render(int mouseX, int mouseY, float delta) {
         renderBackground();
-        drawCenteredString(this.font, "EuLLA Framebuffer View", this.width / 2, 40, 0xffffff);
-        drawCenteredString(this.font, "Current Portal: " + wp.getId(), this.width / 2, 60, 0xffffff);
+        drawCenteredString(this.font, "EuLLA Framebuffer View", this.width / 2, 20, 0xffffff);
+        drawCenteredString(this.font, "Current Portal: \"" + wp.getId() + "\"", this.width / 2, 60, 0xffffff);
+        PortalTargetCamera c = wp.getTarget();
+        drawCenteredString(this.font, "Target", width / 2, height - 50, 0xffffff);
+        drawCenteredString(this.font, String.format("X %.2f | Y %.2f | Z %.2f ( %.2f | %.2f )", c.getPos().x, c.getPos().y, c.getPos().z, c.getPitch(), c.getYaw()), this.width / 2, height - 40, 0xffffff);
 
-
-        wp.render();
         Framebuffer fb = wp.getView();
         double scalefactor = 0.5 / MinecraftClient.getInstance().getWindow().getScaleFactor();
 

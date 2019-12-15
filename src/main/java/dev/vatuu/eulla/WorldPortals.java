@@ -1,18 +1,17 @@
 package dev.vatuu.eulla;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
-import net.fabricmc.fabric.api.event.client.ClientTickCallback;
-
 import dev.vatuu.eulla.gui.TestScreen;
 import dev.vatuu.eulla.portals.PortalTargetCamera;
 import dev.vatuu.eulla.portals.WorldPortal;
 import dev.vatuu.eulla.portals.WorldPortalManager;
 import dev.vatuu.eulla.render.Shaders;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
+import net.fabricmc.fabric.api.event.client.ClientTickCallback;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 
 public class WorldPortals implements ModInitializer {
@@ -49,16 +48,15 @@ public class WorldPortals implements ModInitializer {
             if (testScreen.isPressed()) MinecraftClient.getInstance().openScreen(new TestScreen(null));
             if (spawnPortal.isPressed()) {
                 if (e.world != null) {
-                    System.out.println("Pressed!");
                     portalManager.addPortal(new WorldPortal(
-                        new PortalTargetCamera(new Vec3d(0, 64, 0), 0, 0),
-                        new Vec3d(124, 69, -155),
-                        2,
-                        2,
-                        0,
-                        0,
-                        "testportal",
-                        false
+                            new PortalTargetCamera(new Vec3d(0, 64, 0), 0, 0),
+                            new Vec3d(123.5d, 68.5d, -156.5d),
+                            3,
+                            3,
+                            90,
+                            0,
+                            "testportal",
+                            false
                     ));
                 } else {
                     System.out.println("World is null!");

@@ -29,4 +29,13 @@ public class WorldPortalManager {
             portals.add(portal);
         }
     }
+
+    public WorldPortal getPortal(String id) {
+        for (WorldPortal p : portals) {
+            if (p.getId().equals(id))
+                return p;
+        }
+        System.out.println("Unable to retrieve  \"" + id + "\"");
+        return null;
+    }
 }

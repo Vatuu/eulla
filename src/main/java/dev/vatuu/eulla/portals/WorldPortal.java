@@ -1,18 +1,24 @@
 package dev.vatuu.eulla.portals;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import dev.vatuu.eulla.PortalViewEntity;
+import dev.vatuu.eulla.extensions.MinecraftClientAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.Window;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
-import com.mojang.blaze3d.systems.RenderSystem;
+import org.lwjgl.opengl.GL11;
 
 import java.util.UUID;
-
-import org.lwjgl.opengl.GL11;
 
 public class WorldPortal {
 
     private Framebuffer view;
+    private GameRenderer renderer;
 
     private PortalTargetCamera targetCamera;
 
@@ -21,7 +27,6 @@ public class WorldPortal {
     private int width, height;
     private float pitch, yaw;
     private int fbWidth, fbHeight;
-    private boolean needsRender;
 
     public WorldPortal(PortalTargetCamera target, Vec3d position, int width, int height, float pitch, float yaw, boolean staticCamera) {
         this(target, position, width, height, pitch, yaw, UUID.randomUUID().toString(), false);
@@ -29,13 +34,13 @@ public class WorldPortal {
 
     public WorldPortal(PortalTargetCamera target, Vec3d position, int width, int height, float pitch, float yaw, String id, boolean staticCamera) {
         this.targetCamera = target;
+        this.renderer = new GameRenderer(MinecraftClient.getInstance(), MinecraftClient.getInstance().getResourceManager(), MinecraftClient.getInstance().getBufferBuilders());
         this.position = position;
         this.width = width;
         this.height = height;
         this.pitch = pitch;
         this.yaw = yaw;
         this.id = id;
-        this.needsRender = true;
     }
 
     public Framebuffer getView() {
@@ -68,7 +73,24 @@ public class WorldPortal {
         RenderSystem.ortho(0, fbWidth, 0, fbHeight, -100, 100);
         RenderSystem.matrixMode(GL11.GL_MODELVIEW);
 
-        //Render the World
+        MinecraftClient c = MinecraftClient.getInstance();
+        boolean oldHidden = c.options.hudHidden;
+        Entity oldCamera = c.cameraEntity;
+        Framebuffer oldBuffer = c.getFramebuffer();
+
+        //Do the camera transformations for perspective
+        PortalViewEntity entity = new PortalViewEntity(c.world, targetCamera);
+
+        c.options.hudHidden = true;
+        ((MinecraftClientAccessor) c).setFramebuffer(view);
+        c.setCameraEntity(entity);
+        renderer.renderWorld(c.getTickDelta(), Util.getMeasuringTimeNano(), new MatrixStack());
+
+        c.options.hudHidden = oldHidden;
+        ((MinecraftClientAccessor) c).setFramebuffer(oldBuffer);
+        c.setCameraEntity(oldCamera);
+
+        entity.kill();
 
         view.endWrite();
         MinecraftClient.getInstance().getFramebuffer().beginWrite(true);
@@ -79,17 +101,6 @@ public class WorldPortal {
         RenderSystem.popMatrix();
     }
 
-    public void render() {
-        if (needsRender) {
-            this.renderPortalView();
-            needsRender = false;
-        }
-    }
-
-    public void scheduleUpdate() {
-        needsRender = true;
-    }
-
     public void dispose() {
         if (view != null) view.delete();
     }
@@ -98,14 +109,28 @@ public class WorldPortal {
         return id;
     }
 
-    public Vec3d getPosition() { return position; }
+    public PortalTargetCamera getTarget() {
+        return targetCamera;
+    }
 
-    public int getWidth() { return width; }
+    public Vec3d getPosition() {
+        return position;
+    }
 
-    public int getHeight() { return height; }
+    public int getWidth() {
+        return width;
+    }
 
-    public float getPitch() { return pitch; }
+    public int getHeight() {
+        return height;
+    }
 
-    public float getYaw() { return yaw; }
+    public float getPitch() {
+        return pitch;
+    }
+
+    public float getYaw() {
+        return yaw;
+    }
 
 }

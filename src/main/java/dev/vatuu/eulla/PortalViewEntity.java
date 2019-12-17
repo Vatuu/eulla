@@ -21,6 +21,15 @@ public class PortalViewEntity extends Entity {
         super(TYPE, w);
         this.setPos(target.getPos().getX(), target.getPos().getY(), target.getPos().getZ());
         this.setRotation(target.getYaw(), target.getPitch());
+        this.lastRenderX = target.getPos().getX();
+        this.lastRenderY = target.getPos().getY();
+        this.lastRenderZ = target.getPos().getZ();
+        this.prevX = target.getPos().getX();
+        this.prevY = target.getPos().getY();
+        this.prevZ = target.getPos().getZ();
+        this.prevYaw = target.getYaw();
+        this.prevPitch = target.getPitch();
+        this.noClip = true;
     }
 
     public void writeCustomDataToTag(CompoundTag tag) {

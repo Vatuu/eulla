@@ -38,4 +38,16 @@ public class WorldPortalManager {
         System.out.println("Unable to retrieve  \"" + id + "\"");
         return null;
     }
+
+    public boolean destroyPortal(String id) {
+        WorldPortal p = getPortal(id);
+        if (p == null) {
+            System.out.println("Unable to remove Portal \"" + id + "\".");
+            return false;
+        }
+        p.dispose();
+        portals.remove(p);
+        System.out.println("Removed Portal \"" + id + "\".");
+        return true;
+    }
 }

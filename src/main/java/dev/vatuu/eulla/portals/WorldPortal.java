@@ -3,8 +3,10 @@ package dev.vatuu.eulla.portals;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.vatuu.eulla.PortalViewEntity;
 import dev.vatuu.eulla.extensions.MinecraftClientAccessor;
+import dev.vatuu.eulla.extensions.WorldRendererExt;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
@@ -34,7 +36,7 @@ public class WorldPortal {
 
     public WorldPortal(PortalTargetCamera target, Vec3d position, int width, int height, float pitch, float yaw, String id, boolean staticCamera) {
         this.targetCamera = target;
-        this.renderer = new GameRenderer(MinecraftClient.getInstance(), MinecraftClient.getInstance().getResourceManager(), MinecraftClient.getInstance().getBufferBuilders());
+        this.renderer = new GameRenderer(MinecraftClient.getInstance(), MinecraftClient.getInstance().getResourceManager(), new BufferBuilderStorage());
         this.position = position;
         this.width = width;
         this.height = height;
@@ -84,7 +86,10 @@ public class WorldPortal {
         c.options.hudHidden = true;
         ((MinecraftClientAccessor) c).setFramebuffer(view);
         c.setCameraEntity(entity);
+
+        ((WorldRendererExt) c.worldRenderer).setPlayerRendering(false);
         renderer.renderWorld(c.getTickDelta(), Util.getMeasuringTimeNano(), new MatrixStack());
+        ((WorldRendererExt) c.worldRenderer).setPlayerRendering(true);
 
         c.options.hudHidden = oldHidden;
         ((MinecraftClientAccessor) c).setFramebuffer(oldBuffer);

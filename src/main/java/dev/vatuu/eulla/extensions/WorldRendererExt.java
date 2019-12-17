@@ -6,4 +6,5 @@ public interface WorldRendererExt {
 
     WorldPortalRenderer getWorldPortalRenderer();
 
+    void setPlayerRendering(boolean yes);
 }

@@ -21,6 +21,7 @@ public class WorldPortals implements ModInitializer {
 
     private static FabricKeyBinding testScreen;
     private static FabricKeyBinding spawnPortal;
+    private static FabricKeyBinding removePortal;
 
     private WorldPortalManager portalManager;
 
@@ -34,14 +35,21 @@ public class WorldPortals implements ModInitializer {
             new Identifier(MOD_ID, "test"),
             InputUtil.Type.KEYSYM,
             GLFW.GLFW_KEY_O,
-            "EuLLA"
+                "EuLLA"
         ).build();
 
         spawnPortal = FabricKeyBinding.Builder.create(
-            new Identifier(MOD_ID, "spawn"),
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_I,
-            "EuLLA"
+                new Identifier(MOD_ID, "spawn"),
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_I,
+                "EuLLA"
+        ).build();
+
+        removePortal = FabricKeyBinding.Builder.create(
+                new Identifier(MOD_ID, "remove"),
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_U,
+                "EuLLA"
         ).build();
 
         ClientTickCallback.EVENT.register(e -> {
@@ -49,7 +57,7 @@ public class WorldPortals implements ModInitializer {
             if (spawnPortal.isPressed()) {
                 if (e.world != null) {
                     portalManager.addPortal(new WorldPortal(
-                            new PortalTargetCamera(new Vec3d(0, 64, 0), 0, 0),
+                            new PortalTargetCamera(new Vec3d(0, 65, 0), 0, 0),
                             new Vec3d(123.5d, 68.5d, -156.5d),
                             3,
                             3,
@@ -62,6 +70,7 @@ public class WorldPortals implements ModInitializer {
                     System.out.println("World is null!");
                 }
             }
+            if (removePortal.isPressed()) portalManager.destroyPortal("testportal");
         });
 
         this.portalManager = new WorldPortalManager();

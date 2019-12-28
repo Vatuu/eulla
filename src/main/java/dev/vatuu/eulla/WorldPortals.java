@@ -53,15 +53,15 @@ public class WorldPortals implements ModInitializer {
         ).build();
 
         ClientTickCallback.EVENT.register(e -> {
-            if (testScreen.isPressed()) MinecraftClient.getInstance().openScreen(new TestScreen(null));
+            if (testScreen.isPressed()) MinecraftClient.getInstance().openScreen(new TestScreen(MinecraftClient.getInstance().currentScreen));
             if (spawnPortal.isPressed()) {
                 if (e.world != null) {
                     portalManager.addPortal(new WorldPortal(
-                            new PortalTargetCamera(new Vec3d(0, 65, 0), 0, 0),
-                            new Vec3d(123.5d, 68.5d, -156.5d),
-                            3,
-                            3,
-                            90,
+                            new PortalTargetCamera(new Vec3d(0, 54, -9), 0, 0),
+                            new Vec3d(1d, 66d, -5d),
+                            4,
+                            4,
+                            0,
                             0,
                             "testportal",
                             false

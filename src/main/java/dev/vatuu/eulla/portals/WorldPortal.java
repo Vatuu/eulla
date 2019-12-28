@@ -1,26 +1,27 @@
 package dev.vatuu.eulla.portals;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.vatuu.eulla.PortalViewEntity;
 import dev.vatuu.eulla.extensions.MinecraftClientAccessor;
 import dev.vatuu.eulla.extensions.WorldRendererExt;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.BufferBuilderStorage;
-import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.Window;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
-import org.lwjgl.opengl.GL11;
 
 import java.util.UUID;
 
 public class WorldPortal {
 
     private Framebuffer view;
-    private GameRenderer renderer;
+    private WorldRenderer renderer;
 
     private PortalTargetCamera targetCamera;
 
@@ -36,7 +37,8 @@ public class WorldPortal {
 
     public WorldPortal(PortalTargetCamera target, Vec3d position, int width, int height, float pitch, float yaw, String id, boolean staticCamera) {
         this.targetCamera = target;
-        this.renderer = new GameRenderer(MinecraftClient.getInstance(), MinecraftClient.getInstance().getResourceManager(), new BufferBuilderStorage());
+        this.renderer = new WorldRenderer(MinecraftClient.getInstance(), new BufferBuilderStorage());
+        renderer.setWorld(MinecraftClient.getInstance().world);
         this.position = position;
         this.width = width;
         this.height = height;
@@ -67,43 +69,46 @@ public class WorldPortal {
         view.clear(false);
         view.beginWrite(true);
 
-        RenderSystem.pushMatrix();
-        RenderSystem.loadIdentity();
-        RenderSystem.matrixMode(GL11.GL_PROJECTION);
-        RenderSystem.pushMatrix();
-        RenderSystem.loadIdentity();
-        RenderSystem.ortho(0, fbWidth, 0, fbHeight, -100, 100);
-        RenderSystem.matrixMode(GL11.GL_MODELVIEW);
-
         MinecraftClient c = MinecraftClient.getInstance();
         boolean oldHidden = c.options.hudHidden;
         Entity oldCamera = c.cameraEntity;
         Framebuffer oldBuffer = c.getFramebuffer();
 
-        //Do the camera transformations for perspective
+        PlayerEntity player = c.player;
+
         PortalViewEntity entity = new PortalViewEntity(c.world, targetCamera);
+
+        MatrixStack projection = new MatrixStack();
+        Matrix4f model = projection.peek().getModel();
+        
+        projection.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(targetCamera.getPitch() + player.pitch));
+        projection.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(targetCamera.getYaw() + 180.0F + player.yaw));
 
         c.options.hudHidden = true;
         ((MinecraftClientAccessor) c).setFramebuffer(view);
         c.setCameraEntity(entity);
+        ((WorldRendererExt) renderer).setRenderingPortal(entity);
 
-        ((WorldRendererExt) c.worldRenderer).setPlayerRendering(false);
-        renderer.renderWorld(c.getTickDelta(), Util.getMeasuringTimeNano(), new MatrixStack());
-        ((WorldRendererExt) c.worldRenderer).setPlayerRendering(true);
+        renderer.render(
+                projection,
+                c.getTickDelta(),
+                Util.getMeasuringTimeNano(),
+                false,
+                targetCamera,
+                c.gameRenderer,
+                c.gameRenderer.getLightmapTextureManager(),
+                model
+        );
 
         c.options.hudHidden = oldHidden;
         ((MinecraftClientAccessor) c).setFramebuffer(oldBuffer);
+        ((WorldRendererExt) renderer).setRenderingPortal(null);
         c.setCameraEntity(oldCamera);
 
         entity.kill();
 
         view.endWrite();
         MinecraftClient.getInstance().getFramebuffer().beginWrite(true);
-
-        RenderSystem.matrixMode(GL11.GL_PROJECTION);
-        RenderSystem.popMatrix();
-        RenderSystem.matrixMode(GL11.GL_MODELVIEW);
-        RenderSystem.popMatrix();
     }
 
     public void dispose() {

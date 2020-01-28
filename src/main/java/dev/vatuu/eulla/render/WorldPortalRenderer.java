@@ -74,14 +74,14 @@ public class WorldPortalRenderer {
         glUseProgram(0);
     }
 
-    public void render(Matrix4f projection, MatrixStack model) {
-        WorldPortals.INSTANCE.getPortalManager().getPortals().forEach(p -> render(p, projection, model));
+    public void render(MatrixStack model, Matrix4f projection, float delta) {
+        WorldPortals.INSTANCE.getPortalManager().getPortals().forEach(p -> render(p, model, projection, delta));
     }
 
-    private void render(WorldPortal portal, Matrix4f projection, MatrixStack model) {
+    private void render(WorldPortal portal, MatrixStack model, Matrix4f projection, float delta) {
         if (vbo == 0) init();
 
-        portal.renderPortalView();
+        portal.renderPortalView(model, delta);
         Framebuffer portalView = portal.getView();
 
         glUseProgram(Shaders.PORTAL_SHADER);

@@ -58,13 +58,12 @@ public class WorldPortals implements ModInitializer {
                 if (e.world != null) {
                     portalManager.addPortal(new WorldPortal(
                             new PortalTargetCamera(new Vec3d(0, 54, -9), 0, 0),
-                            new Vec3d(1d, 66d, -5d),
+                            new Vec3d(-1d, 66d, 422),
                             4,
                             4,
+                            180,
                             0,
-                            0,
-                            "testportal",
-                            false
+                            "testportal"
                     ));
                 } else {
                     System.out.println("World is null!");

@@ -1,12 +1,14 @@
 package dev.vatuu.eulla;
 
 import dev.vatuu.eulla.portals.PortalTargetCamera;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class PortalViewEntity extends Entity {
@@ -19,7 +21,7 @@ public class PortalViewEntity extends Entity {
 
     public PortalViewEntity(World w, PortalTargetCamera target) {
         super(TYPE, w);
-        this.setPos(target.getPos().getX(), target.getPos().getY(), target.getPos().getZ());
+        this.setPos(target.getPos().x, target.getPos().y, target.getPos().z);
         this.setRotation(target.getYaw(), target.getPitch());
         this.lastRenderX = target.getPos().getX();
         this.lastRenderY = target.getPos().getY();
@@ -30,6 +32,9 @@ public class PortalViewEntity extends Entity {
         this.prevYaw = target.getYaw();
         this.prevPitch = target.getPitch();
         this.noClip = true;
+
+        this.updatePosition();
+        target.update(this.world, this, false, false, MinecraftClient.getInstance().getTickDelta());
     }
 
     public void writeCustomDataToTag(CompoundTag tag) {

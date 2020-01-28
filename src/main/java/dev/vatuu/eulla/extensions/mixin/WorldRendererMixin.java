@@ -2,15 +2,12 @@ package dev.vatuu.eulla.extensions.mixin;
 
 import dev.vatuu.eulla.PortalViewEntity;
 import dev.vatuu.eulla.extensions.WorldRendererExt;
-import dev.vatuu.eulla.portals.WorldPortal;
 import dev.vatuu.eulla.render.WorldPortalRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -31,7 +28,6 @@ public abstract class WorldRendererMixin implements WorldRendererExt {
     @Shadow private double lastCameraChunkUpdateZ;
     @Shadow private BuiltChunkStorage chunks;
 
-    @Shadow private int renderDistance;
     private WorldPortalRenderer portalRenderer;
     private PortalViewEntity renderingPortal;
 
@@ -55,7 +51,7 @@ public abstract class WorldRendererMixin implements WorldRendererExt {
     }
 
     @Inject(at = @At(value = "HEAD"), method = "canDrawEntityOutlines", cancellable = true)
-    public void canDrawEntityOutlines(CallbackInfoReturnable info) {
+    public void canDrawEntityOutlines(CallbackInfoReturnable<Boolean> info) {
         if (renderingPortal == null) return;
         info.setReturnValue(false);
     }
@@ -64,7 +60,7 @@ public abstract class WorldRendererMixin implements WorldRendererExt {
     public void render(MatrixStack model, float tickDelta, long limitTime, boolean outline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmap, Matrix4f projection, CallbackInfo info, Profiler profiler) {
         if (renderingPortal == null) {
             profiler.push("eulla");
-            this.portalRenderer.render(projection, model);
+            this.portalRenderer.render(model, projection, tickDelta);
             profiler.pop();
         }
     }

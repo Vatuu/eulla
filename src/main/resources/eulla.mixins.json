@@ -6,7 +6,8 @@
   ],
   "client": [
     "MinecraftClientMixin",
-    "WorldRendererMixin"
+    "WorldRendererMixin",
+    "Matrix4fMixin"
   ],
   "injectors": {
     "defaultRequire": 1

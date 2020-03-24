@@ -156,6 +156,21 @@ public class WorldPortal {
         return yaw;
     }
 
+    public int getFramebufferWidth() {
+        return fbWidth;
+    }
+
+    public int getFramebufferHeight() {
+        return fbHeight;
+    }
+
+    public void resizeFramebuffer(int fbWidth, int fbHeight) {
+        this.fbWidth = fbWidth;
+        this.fbHeight = fbHeight;
+        if (bufferView != null) bufferView.delete();
+        bufferView = null;
+    }
+
     private double[] getClippingPlaneArray(float pitch, float yaw, Matrix4f modelview) {
         Vec3d normal = new Vec3d(0, 0, -1).rotateX(pitch).rotateY(yaw);
         Vec3d camera = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();

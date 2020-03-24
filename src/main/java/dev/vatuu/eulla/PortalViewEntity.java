@@ -1,6 +1,7 @@
 package dev.vatuu.eulla;
 
 import dev.vatuu.eulla.portals.PortalTargetCamera;
+import net.fabricmc.fabric.api.entity.FabricEntityTypeBuilder;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCategory;
@@ -8,7 +9,6 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class PortalViewEntity extends Entity {
@@ -33,7 +33,7 @@ public class PortalViewEntity extends Entity {
         this.prevPitch = target.getPitch();
         this.noClip = true;
 
-        this.updatePosition();
+        this.updatePosition(target.getPos().x, target.getPos().y, target.getPos().z);
         target.update(this.world, this, false, false, MinecraftClient.getInstance().getTickDelta());
     }
 
@@ -51,6 +51,6 @@ public class PortalViewEntity extends Entity {
     }
 
     static {
-        TYPE = new EntityType<>((t, w) -> null, EntityCategory.MISC, false, false, false, false, EntityDimensions.fixed(0f, 0f));
+        TYPE = FabricEntityTypeBuilder.create(EntityCategory.MISC, (EntityType.EntityFactory<PortalViewEntity>)(t,w)->null).disableSaving().disableSummon().size(EntityDimensions.fixed(0,0)).build();
     }
 }

@@ -31,13 +31,13 @@ public class TestScreen extends Screen {
     @Override
     public void render(int mouseX, int mouseY, float delta) {
         renderBackground();
-        drawCenteredString(this.font, "EuLLA Framebuffer View", this.width / 2, 20, 0xffffff);
+        drawCenteredString(this.textRenderer, "EuLLA Framebuffer View", this.width / 2, 20, 0xffffff);
 
         if (wp != null) {
-            drawCenteredString(this.font, "Current Portal: \"" + wp.getId() + "\"", this.width / 2, 60, 0xffffff);
+            drawCenteredString(this.textRenderer, "Current Portal: \"" + wp.getId() + "\"", this.width / 2, 60, 0xffffff);
             PortalTargetCamera c = wp.getTarget();
-            drawCenteredString(this.font, "Target", width / 2, height - 50, 0xffffff);
-            drawCenteredString(this.font, String.format("X %.2f | Y %.2f | Z %.2f ( %.2f | %.2f )", c.getPos().x, c.getPos().y, c.getPos().z, c.getPitch(), c.getYaw()), this.width / 2, height - 40, 0xffffff);
+            drawCenteredString(this.textRenderer, "Target", width / 2, height - 50, 0xffffff);
+            drawCenteredString(this.textRenderer, String.format("X %.2f | Y %.2f | Z %.2f ( %.2f | %.2f )", c.getPos().x, c.getPos().y, c.getPos().z, c.getPitch(), c.getYaw()), this.width / 2, height - 40, 0xffffff);
 
             Framebuffer fb = wp.getView();
             double scalefactor = 0.5 / MinecraftClient.getInstance().getWindow().getScaleFactor();
@@ -52,7 +52,7 @@ public class TestScreen extends Screen {
             fb.endRead();
             RenderSystem.popMatrix();
         } else {
-            drawCenteredString(this.font, "No Portal available.", width / 2, height / 2, 0xffffff);
+            drawCenteredString(this.textRenderer, "No Portal available.", width / 2, height / 2, 0xffffff);
         }
         super.render(mouseX, mouseY, delta);
     }
